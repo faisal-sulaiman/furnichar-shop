@@ -1,0 +1,665 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import ProductCard from '../../components/ProductCard.astro';
+
+// Mock product data - in a real app, this would come from a database
+const productData = {
+	"modern-sofa": {
+		id: "modern-sofa",
+		name: "Modern Comfort Sofa",
+		price: 1299,
+		images: [
+			"https://images.pexels.com/photos/1350789/pexels-photo-1350789.jpeg",
+			"https://images.pexels.com/photos/1148955/pexels-photo-1148955.jpeg",
+			"https://images.pexels.com/photos/1866149/pexels-photo-1866149.jpeg"
+		],
+		category: "Sofas",
+		description: "Transform your living space with our Modern Comfort Sofa. Crafted with premium materials and designed for both style and comfort, this sofa features a contemporary silhouette that complements any modern home. The high-quality fabric upholstery is both durable and soft to the touch, while the sturdy wooden frame ensures long-lasting support.",
+		specifications: {
+			dimensions: "84\" W x 36\" D x 32\" H",
+			materials: "Premium fabric, hardwood frame, high-density foam",
+			colors: "Charcoal Gray, Navy Blue, Cream",
+			weight: "95 lbs",
+			assembly: "Minimal assembly required"
+		},
+		features: [
+			"Premium fabric upholstery",
+			"Hardwood frame construction",
+			"High-density foam cushions",
+			"Contemporary design",
+			"Easy to clean"
+		]
+	},
+	"dining-table": {
+		id: "dining-table",
+		name: "Oak Dining Table",
+		price: 899,
+		images: [
+			"https://images.pexels.com/photos/1395967/pexels-photo-1395967.jpeg",
+			"https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg"
+		],
+		category: "Tables",
+		description: "Bring elegance to your dining room with our handcrafted Oak Dining Table. Made from solid oak wood, this table showcases beautiful natural grain patterns and exceptional durability. Perfect for family gatherings and dinner parties.",
+		specifications: {
+			dimensions: "72\" W x 36\" D x 30\" H",
+			materials: "Solid oak wood, natural finish",
+			seating: "Seats 6-8 people",
+			weight: "120 lbs",
+			assembly: "Full assembly required"
+		},
+		features: [
+			"Solid oak construction",
+			"Natural wood grain",
+			"Seats 6-8 people",
+			"Durable finish",
+			"Timeless design"
+		]
+	}
+};
+
+const { id } = Astro.params;
+const product = productData[id as keyof typeof productData];
+
+if (!product) {
+	return Astro.redirect('/shop');
+}
+
+const relatedProducts = [
+	{
+		id: "accent-chair",
+		name: "Velvet Accent Chair",
+		price: 449,
+		image: "https://images.pexels.com/photos/586744/pexels-photo-586744.jpeg",
+		category: "Chairs"
+	},
+	{
+		id: "coffee-table",
+		name: "Glass Coffee Table",
+		price: 599,
+		image: "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg",
+		category: "Tables"
+	},
+	{
+		id: "bookshelf",
+		name: "Industrial Bookshelf",
+		price: 399,
+		image: "https://images.pexels.com/photos/2177482/pexels-photo-2177482.jpeg",
+		category: "Storage"
+	}
+];
+---
+
+<Layout title={`${product.name} - FurniCraft`}>
+	<Header />
+	
+	<main>
+		<!-- Breadcrumb -->
+		<section class="breadcrumb">
+			<div class="container">
+				<nav class="breadcrumb-nav">
+					<a href="/">Home</a>
+					<span>/</span>
+					<a href="/shop">Shop</a>
+					<span>/</span>
+					<span class="current">{product.name}</span>
+				</nav>
+			</div>
+		</section>
+
+		<!-- Product Details -->
+		<section class="product-details section-padding">
+			<div class="container">
+				<div class="product-layout">
+					<!-- Product Images -->
+					<div class="product-images">
+						<div class="main-image">
+							<img id="mainImage" src={product.images[0]} alt={product.name} />
+						</div>
+						<div class="thumbnail-images">
+							{product.images.map((image, index) => (
+								<button class="thumbnail" onclick={`changeImage('${image}')`}>
+									<img src={image} alt={`${product.name} view ${index + 1}`} />
+								</button>
+							))}
+						</div>
+					</div>
+
+					<!-- Product Info -->
+					<div class="product-info">
+						<div class="product-header">
+							<span class="product-category">{product.category}</span>
+							<h1>{product.name}</h1>
+							<div class="product-price">
+								<span class="price">${product.price}</span>
+							</div>
+						</div>
+
+						<div class="product-description">
+							<p>{product.description}</p>
+						</div>
+
+						<div class="product-features">
+							<h3>Key Features</h3>
+							<ul>
+								{product.features.map(feature => (
+									<li>{feature}</li>
+								))}
+							</ul>
+						</div>
+
+						<div class="product-options">
+							<div class="quantity-selector">
+								<label for="quantity">Quantity:</label>
+								<div class="quantity-controls">
+									<button type="button" onclick="decreaseQuantity()">-</button>
+									<input type="number" id="quantity" value="1" min="1" />
+									<button type="button" onclick="increaseQuantity()">+</button>
+								</div>
+							</div>
+
+							<div class="product-actions">
+								<button class="btn btn-primary add-to-cart">Add to Cart</button>
+								<button class="btn btn-secondary">Add to Wishlist</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Product Tabs -->
+		<section class="product-tabs">
+			<div class="container">
+				<div class="tabs-header">
+					<button class="tab-btn active" onclick="openTab(event, 'specifications')">Specifications</button>
+					<button class="tab-btn" onclick="openTab(event, 'shipping')">Shipping Info</button>
+					<button class="tab-btn" onclick="openTab(event, 'reviews')">Reviews</button>
+				</div>
+
+				<div class="tabs-content">
+					<div id="specifications" class="tab-content active">
+						<h3>Product Specifications</h3>
+						<div class="specs-grid">
+							{Object.entries(product.specifications).map(([key, value]) => (
+								<div class="spec-item">
+									<strong>{key.charAt(0).toUpperCase() + key.slice(1)}:</strong>
+									<span>{value}</span>
+								</div>
+							))}
+						</div>
+					</div>
+
+					<div id="shipping" class="tab-content">
+						<h3>Shipping Information</h3>
+						<div class="shipping-info">
+							<p><strong>Free Shipping:</strong> On orders over $500</p>
+							<p><strong>Standard Delivery:</strong> 5-7 business days</p>
+							<p><strong>Express Delivery:</strong> 2-3 business days</p>
+							<p><strong>White Glove Service:</strong> Available for furniture assembly</p>
+							<p><strong>Return Policy:</strong> 30-day return window</p>
+						</div>
+					</div>
+
+					<div id="reviews" class="tab-content">
+						<h3>Customer Reviews</h3>
+						<div class="reviews-section">
+							<div class="review-summary">
+								<div class="rating-display">
+									<span class="rating-score">4.8</span>
+									<div class="stars">★★★★★</div>
+									<span class="review-count">(24 reviews)</span>
+								</div>
+							</div>
+
+							<div class="reviews-list">
+								<div class="review-item">
+									<div class="review-header">
+										<strong>Sarah M.</strong>
+										<div class="stars">★★★★★</div>
+									</div>
+									<p>"Absolutely love this piece! The quality is exceptional and it looks perfect in our living room."</p>
+								</div>
+
+								<div class="review-item">
+									<div class="review-header">
+										<strong>Mike R.</strong>
+										<div class="stars">★★★★☆</div>
+									</div>
+									<p>"Great value for money. Delivery was quick and the assembly instructions were clear."</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Related Products -->
+		<section class="related-products section-padding" style="background: #f7fafc;">
+			<div class="container">
+				<h2 class="text-center">You Might Also Like</h2>
+				<div class="products-grid grid grid-3">
+					{relatedProducts.map(product => (
+						<ProductCard {...product} />
+					))}
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<Footer />
+</Layout>
+
+<style>
+	.breadcrumb {
+		background: #f7fafc;
+		padding: 1rem 0;
+		border-bottom: 1px solid #e2e8f0;
+	}
+
+	.breadcrumb-nav {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.9rem;
+	}
+
+	.breadcrumb-nav a {
+		color: #1a365d;
+		text-decoration: none;
+	}
+
+	.breadcrumb-nav a:hover {
+		text-decoration: underline;
+	}
+
+	.breadcrumb-nav span {
+		color: #a0aec0;
+	}
+
+	.breadcrumb-nav .current {
+		color: #4a5568;
+		font-weight: 500;
+	}
+
+	.product-layout {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 4rem;
+		align-items: start;
+	}
+
+	.product-images {
+		position: sticky;
+		top: 100px;
+	}
+
+	.main-image {
+		margin-bottom: 1rem;
+		border-radius: 12px;
+		overflow: hidden;
+		aspect-ratio: 4 / 3;
+	}
+
+	.main-image img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.thumbnail-images {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+		gap: 0.5rem;
+	}
+
+	.thumbnail {
+		background: none;
+		border: 2px solid transparent;
+		border-radius: 8px;
+		overflow: hidden;
+		aspect-ratio: 1;
+		cursor: pointer;
+		transition: border-color 0.3s ease;
+	}
+
+	.thumbnail:hover,
+	.thumbnail.active {
+		border-color: #1a365d;
+	}
+
+	.thumbnail img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.product-info {
+		padding: 1rem 0;
+	}
+
+	.product-header {
+		margin-bottom: 2rem;
+	}
+
+	.product-category {
+		color: #718096;
+		font-size: 0.875rem;
+		text-transform: uppercase;
+		font-weight: 500;
+		letter-spacing: 0.05em;
+	}
+
+	.product-info h1 {
+		font-size: 2.5rem;
+		color: #1a365d;
+		margin: 0.5rem 0 1rem;
+	}
+
+	.price {
+		font-size: 2rem;
+		font-weight: 700;
+		color: #1a365d;
+	}
+
+	.product-description {
+		margin-bottom: 2rem;
+	}
+
+	.product-description p {
+		font-size: 1.1rem;
+		line-height: 1.6;
+		color: #4a5568;
+	}
+
+	.product-features {
+		margin-bottom: 2rem;
+	}
+
+	.product-features h3 {
+		color: #1a365d;
+		margin-bottom: 1rem;
+	}
+
+	.product-features ul {
+		list-style: none;
+	}
+
+	.product-features li {
+		position: relative;
+		padding-left: 1.5rem;
+		margin-bottom: 0.5rem;
+		color: #4a5568;
+	}
+
+	.product-features li::before {
+		content: '✓';
+		position: absolute;
+		left: 0;
+		color: #38a169;
+		font-weight: bold;
+	}
+
+	.product-options {
+		border-top: 1px solid #e2e8f0;
+		padding-top: 2rem;
+	}
+
+	.quantity-selector {
+		margin-bottom: 2rem;
+	}
+
+	.quantity-selector label {
+		display: block;
+		margin-bottom: 0.5rem;
+		font-weight: 500;
+		color: #1a365d;
+	}
+
+	.quantity-controls {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		width: fit-content;
+	}
+
+	.quantity-controls button {
+		background: #1a365d;
+		color: white;
+		width: 40px;
+		height: 40px;
+		border-radius: 6px;
+		cursor: pointer;
+		font-size: 1.2rem;
+		font-weight: bold;
+	}
+
+	.quantity-controls input {
+		width: 80px;
+		height: 40px;
+		text-align: center;
+		border: 1px solid #e2e8f0;
+		border-radius: 6px;
+		font-size: 1rem;
+	}
+
+	.product-actions {
+		display: flex;
+		gap: 1rem;
+		flex-wrap: wrap;
+	}
+
+	.add-to-cart {
+		flex: 1;
+		min-width: 200px;
+	}
+
+	.product-tabs {
+		background: white;
+		border-top: 1px solid #e2e8f0;
+	}
+
+	.tabs-header {
+		display: flex;
+		border-bottom: 1px solid #e2e8f0;
+		gap: 0;
+	}
+
+	.tab-btn {
+		background: none;
+		border: none;
+		padding: 1rem 2rem;
+		cursor: pointer;
+		font-weight: 500;
+		color: #4a5568;
+		border-bottom: 3px solid transparent;
+		transition: all 0.3s ease;
+	}
+
+	.tab-btn:hover,
+	.tab-btn.active {
+		color: #1a365d;
+		border-bottom-color: #1a365d;
+	}
+
+	.tabs-content {
+		padding: 2rem 0;
+	}
+
+	.tab-content {
+		display: none;
+	}
+
+	.tab-content.active {
+		display: block;
+	}
+
+	.specs-grid {
+		display: grid;
+		gap: 1rem;
+	}
+
+	.spec-item {
+		display: grid;
+		grid-template-columns: 150px 1fr;
+		gap: 1rem;
+		padding: 0.75rem 0;
+		border-bottom: 1px solid #f7fafc;
+	}
+
+	.spec-item strong {
+		color: #1a365d;
+	}
+
+	.shipping-info p {
+		margin-bottom: 1rem;
+		line-height: 1.6;
+	}
+
+	.review-summary {
+		margin-bottom: 2rem;
+	}
+
+	.rating-display {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.rating-score {
+		font-size: 2rem;
+		font-weight: bold;
+		color: #1a365d;
+	}
+
+	.stars {
+		color: #f6ad55;
+		font-size: 1.2rem;
+	}
+
+	.review-count {
+		color: #4a5568;
+	}
+
+	.reviews-list {
+		display: grid;
+		gap: 1.5rem;
+	}
+
+	.review-item {
+		padding: 1.5rem;
+		background: #f7fafc;
+		border-radius: 8px;
+	}
+
+	.review-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 0.5rem;
+	}
+
+	.review-header strong {
+		color: #1a365d;
+	}
+
+	@media (max-width: 968px) {
+		.product-layout {
+			grid-template-columns: 1fr;
+			gap: 2rem;
+		}
+
+		.product-images {
+			position: static;
+		}
+
+		.product-info h1 {
+			font-size: 2rem;
+		}
+
+		.tabs-header {
+			flex-wrap: wrap;
+		}
+
+		.tab-btn {
+			flex: 1;
+			min-width: 120px;
+		}
+
+		.spec-item {
+			grid-template-columns: 1fr;
+			gap: 0.5rem;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.product-actions {
+			flex-direction: column;
+		}
+
+		.add-to-cart {
+			min-width: 100%;
+		}
+
+		.thumbnail-images {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+</style>
+
+<script>
+	function changeImage(src) {
+		const mainImage = document.getElementById('mainImage');
+		if (mainImage) {
+			mainImage.src = src;
+		}
+
+		// Update active thumbnail
+		document.querySelectorAll('.thumbnail').forEach(thumb => {
+			thumb.classList.remove('active');
+		});
+		event.target.closest('.thumbnail')?.classList.add('active');
+	}
+
+	function increaseQuantity() {
+		const quantityInput = document.getElementById('quantity');
+		if (quantityInput) {
+			const currentValue = parseInt(quantityInput.value);
+			quantityInput.value = (currentValue + 1).toString();
+		}
+	}
+
+	function decreaseQuantity() {
+		const quantityInput = document.getElementById('quantity');
+		if (quantityInput) {
+			const currentValue = parseInt(quantityInput.value);
+			if (currentValue > 1) {
+				quantityInput.value = (currentValue - 1).toString();
+			}
+		}
+	}
+
+	function openTab(event, tabName) {
+		// Hide all tab content
+		document.querySelectorAll('.tab-content').forEach(content => {
+			content.classList.remove('active');
+		});
+
+		// Remove active class from all tab buttons
+		document.querySelectorAll('.tab-btn').forEach(btn => {
+			btn.classList.remove('active');
+		});
+
+		// Show selected tab content and mark button as active
+		document.getElementById(tabName)?.classList.add('active');
+		event.currentTarget.classList.add('active');
+	}
+
+	// Set first thumbnail as active
+	document.addEventListener('DOMContentLoaded', () => {
+		const firstThumbnail = document.querySelector('.thumbnail');
+		firstThumbnail?.classList.add('active');
+	});
+</script>

@@ -1,0 +1,459 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import ProductCard from "../components/ProductCard.astro";
+
+const products = [
+  {
+    id: "modern-sofa",
+    name: "Modern Comfort Sofa",
+    price: 1299,
+    image: "https://images.pexels.com/photos/1350789/pexels-photo-1350789.jpeg",
+    category: "Sofas",
+  },
+  {
+    id: "dining-table",
+    name: "Oak Dining Table",
+    price: 899,
+    image: "https://images.pexels.com/photos/1395967/pexels-photo-1395967.jpeg",
+    category: "Tables",
+  },
+  {
+    id: "accent-chair",
+    name: "Velvet Accent Chair",
+    price: 449,
+    salePrice: 349,
+    sale: true,
+    image: "https://images.pexels.com/photos/586744/pexels-photo-586744.jpeg",
+    category: "Chairs",
+  },
+  {
+    id: "bedroom-set",
+    name: "Complete Bedroom Set",
+    price: 1899,
+    image: "https://images.pexels.com/photos/271816/pexels-photo-271816.jpeg",
+    category: "Beds",
+  },
+  {
+    id: "coffee-table",
+    name: "Glass Coffee Table",
+    price: 599,
+    image: "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg",
+    category: "Tables",
+  },
+  {
+    id: "bookshelf",
+    name: "Industrial Bookshelf",
+    price: 399,
+    image: "https://images.pexels.com/photos/2177482/pexels-photo-2177482.jpeg",
+    category: "Storage",
+  },
+  {
+    id: "leather-sofa",
+    name: "Premium Leather Sofa",
+    price: 1899,
+    salePrice: 1499,
+    sale: true,
+    image: "https://images.pexels.com/photos/1148955/pexels-photo-1148955.jpeg",
+    category: "Sofas",
+  },
+  {
+    id: "wardrobe",
+    name: "Wooden Wardrobe",
+    price: 1299,
+    image: "https://images.pexels.com/photos/1743227/pexels-photo-1743227.jpeg",
+    category: "Storage",
+  },
+  {
+    id: "office-chair",
+    name: "Ergonomic Office Chair",
+    price: 299,
+    image: "product-1.png",
+    category: "Chairs",
+  },
+  {
+    id: "office-chair",
+    name: "Ergonomic Office Chair",
+    price: 299,
+    image: "product-2.png",
+    category: "Chairs",
+  },
+];
+
+const categories = ["All", "Sofas", "Tables", "Chairs", "Beds", "Storage"];
+---
+
+<Layout title="Shop - FurniCraft Furniture Collection">
+  <Header />
+
+  <main>
+    <!-- Page Header -->
+    <section class="page-header">
+      <div class="container">
+        <h1>Our Collection</h1>
+        <p>Discover premium furniture pieces for every room</p>
+      </div>
+    </section>
+
+    <!-- Shop Content -->
+    <section class="shop-content section-padding">
+      <div class="container">
+        <div class="shop-layout">
+          <!-- Filters Sidebar -->
+          <aside class="filters-sidebar">
+            <div class="filter-section">
+              <h3>Categories</h3>
+              <div class="category-filters">
+                {
+                  categories.map((category) => (
+                    <button
+                      class="category-btn"
+                      data-category={category.toLowerCase()}
+                    >
+                      {category}
+                    </button>
+                  ))
+                }
+              </div>
+            </div>
+
+            <div class="filter-section">
+              <h3>Price Range</h3>
+              <div class="price-filter">
+                <input
+                  type="range"
+                  id="priceRange"
+                  min="0"
+                  max="2000"
+                  value="2000"
+                />
+                <div class="price-display">
+                  <span>$0</span>
+                  <span id="maxPrice">$2000</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="filter-section">
+              <h3>Sort By</h3>
+              <select id="sortBy" class="sort-select">
+                <option value="name">Name A-Z</option>
+                <option value="price-low">Price: Low to High</option>
+                <option value="price-high">Price: High to Low</option>
+                <option value="newest">Newest First</option>
+              </select>
+            </div>
+          </aside>
+
+          <!-- Products Grid -->
+          <div class="products-section">
+            <div class="products-header">
+              <p class="results-count">
+                <span id="productCount">{products.length}</span> products found
+              </p>
+              <button class="mobile-filter-toggle" id="mobileFilterToggle">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"
+                  ></polygon>
+                </svg>
+                Filters
+              </button>
+            </div>
+
+            <div class="products-grid grid grid-3" id="productsGrid">
+              {products.map((product) => <ProductCard {...product} />)}
+            </div>
+
+            <div class="pagination">
+              <button class="pagination-btn">Previous</button>
+              <span class="pagination-info">Page 1 of 1</span>
+              <button class="pagination-btn">Next</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  .page-header {
+    background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+    color: white;
+    padding: 6rem 0 4rem;
+    text-align: center;
+  }
+
+  .page-header h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .page-header p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+  }
+
+  .shop-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 3rem;
+  }
+
+  .filters-sidebar {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    height: fit-content;
+    position: sticky;
+    top: 100px;
+  }
+
+  .filter-section {
+    margin-bottom: 2rem;
+  }
+
+  .filter-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .filter-section h3 {
+    color: #1a365d;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+  }
+
+  .category-filters {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .category-btn {
+    background: none;
+    border: 1px solid #e2e8f0;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #4a5568;
+  }
+
+  .category-btn:hover,
+  .category-btn.active {
+    background: #1a365d;
+    color: white;
+    border-color: #1a365d;
+  }
+
+  .price-filter input[type="range"] {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  .price-display {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: #4a5568;
+  }
+
+  .sort-select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+  }
+
+  .products-section {
+    flex: 1;
+  }
+
+  .products-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .results-count {
+    color: #4a5568;
+    font-weight: 500;
+  }
+
+  .mobile-filter-toggle {
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    background: #1a365d;
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 3rem;
+  }
+
+  .pagination-btn {
+    background: #1a365d;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+
+  .pagination-btn:hover {
+    background: #2c5282;
+  }
+
+  .pagination-btn:disabled {
+    background: #a0aec0;
+    cursor: not-allowed;
+  }
+
+  .pagination-info {
+    color: #4a5568;
+    font-weight: 500;
+  }
+
+  @media (max-width: 968px) {
+    .shop-layout {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .filters-sidebar {
+      position: fixed;
+      top: 0;
+      left: -100%;
+      width: 280px;
+      height: 100vh;
+      z-index: 1000;
+      transition: left 0.3s ease;
+      overflow-y: auto;
+    }
+
+    .filters-sidebar.active {
+      left: 0;
+    }
+
+    .mobile-filter-toggle {
+      display: flex;
+    }
+
+    .products-header {
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .page-header h1 {
+      font-size: 2rem;
+    }
+
+    .page-header p {
+      font-size: 1rem;
+    }
+
+    .products-grid {
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+  }
+</style>
+
+<script>
+  // Filter functionality
+  const categoryBtns = document.querySelectorAll(".category-btn");
+  const productsGrid = document.getElementById("productsGrid");
+  const productCount = document.getElementById("productCount");
+  const mobileFilterToggle = document.getElementById("mobileFilterToggle");
+  const filtersSidebar = document.querySelector(".filters-sidebar");
+
+  // Mobile filter toggle
+  mobileFilterToggle?.addEventListener("click", () => {
+    filtersSidebar?.classList.toggle("active");
+  });
+
+  // Category filtering
+  categoryBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      // Remove active class from all buttons
+      categoryBtns.forEach((b) => b.classList.remove("active"));
+      // Add active class to clicked button
+      btn.classList.add("active");
+
+      const category = btn.getAttribute("data-category");
+      filterProducts(category);
+    });
+  });
+
+  // Set first button as active
+  categoryBtns[0]?.classList.add("active");
+
+  function filterProducts(category) {
+    const products = productsGrid?.children;
+    let visibleCount = 0;
+
+    if (products) {
+      Array.from(products).forEach((product) => {
+        const productCategory = product
+          .querySelector(".product-category")
+          ?.textContent?.toLowerCase();
+
+        if (category === "all" || productCategory === category) {
+          product.style.display = "block";
+          visibleCount++;
+        } else {
+          product.style.display = "none";
+        }
+      });
+    }
+
+    if (productCount) {
+      productCount.textContent = visibleCount.toString();
+    }
+  }
+
+  // Price range filter
+  const priceRange = document.getElementById("priceRange");
+  const maxPrice = document.getElementById("maxPrice");
+
+  priceRange?.addEventListener("input", (e) => {
+    const value = e.target.value;
+    if (maxPrice) {
+      maxPrice.textContent = `$${value}`;
+    }
+  });
+
+  // Sort functionality
+  const sortSelect = document.getElementById("sortBy");
+  sortSelect?.addEventListener("change", (e) => {
+    const sortValue = e.target.value;
+    // Sort functionality would be implemented here
+    console.log("Sorting by:", sortValue);
+  });
+</script>

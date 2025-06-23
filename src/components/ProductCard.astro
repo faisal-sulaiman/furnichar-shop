@@ -1,0 +1,155 @@
+---
+export interface Props {
+	id: string;
+	name: string;
+	price: number;
+	image: string;
+	category?: string;
+	sale?: boolean;
+	salePrice?: number;
+}
+
+const { id, name, price, image, category, sale, salePrice } = Astro.props;
+const displayPrice = sale && salePrice ? salePrice : price;
+---
+
+<div class="product-card">
+	<div class="product-image">
+		<img src={image} alt={name} loading="lazy" />
+		{sale && <span class="sale-badge">Sale</span>}
+		<div class="product-overlay">
+			<a href={`/product/${id}`} class="btn btn-primary">View Product</a>
+		</div>
+	</div>
+	<div class="product-info">
+		{category && <span class="product-category">{category}</span>}
+		<h3 class="product-name">{name}</h3>
+		<div class="product-price">
+			{sale && salePrice ? (
+				<>
+					<span class="current-price">${salePrice}</span>
+					<span class="original-price">${price}</span>
+				</>
+			) : (
+				<span class="current-price">${price}</span>
+			)}
+		</div>
+	</div>
+</div>
+
+<style>
+	.product-card {
+		background: white;
+		border-radius: 12px;
+		overflow: hidden;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+		transition: all 0.3s ease;
+		cursor: pointer;
+	}
+
+	.product-card:hover {
+		transform: translateY(-8px);
+		box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+	}
+
+	.product-image {
+		position: relative;
+		overflow: hidden;
+		aspect-ratio: 4 / 3;
+	}
+
+	.product-image img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		transition: transform 0.3s ease;
+	}
+
+	.product-card:hover .product-image img {
+		transform: scale(1.05);
+	}
+
+	.sale-badge {
+		position: absolute;
+		top: 12px;
+		left: 12px;
+		background: #e53e3e;
+		color: white;
+		padding: 4px 8px;
+		border-radius: 4px;
+		font-size: 0.75rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		z-index: 2;
+	}
+
+	.product-overlay {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: rgba(0, 0, 0, 0.7);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		opacity: 0;
+		transition: opacity 0.3s ease;
+	}
+
+	.product-card:hover .product-overlay {
+		opacity: 1;
+	}
+
+	.product-info {
+		padding: 1.5rem;
+	}
+
+	.product-category {
+		color: #718096;
+		font-size: 0.875rem;
+		text-transform: uppercase;
+		font-weight: 500;
+		letter-spacing: 0.05em;
+	}
+
+	.product-name {
+		margin: 0.5rem 0;
+		font-size: 1.125rem;
+		font-weight: 600;
+		color: #2d3748;
+		line-height: 1.4;
+	}
+
+	.product-price {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.current-price {
+		font-size: 1.25rem;
+		font-weight: 700;
+		color: #1a365d;
+	}
+
+	.original-price {
+		font-size: 1rem;
+		color: #a0aec0;
+		text-decoration: line-through;
+	}
+
+	@media (max-width: 768px) {
+		.product-info {
+			padding: 1rem;
+		}
+
+		.product-name {
+			font-size: 1rem;
+		}
+
+		.current-price {
+			font-size: 1.125rem;
+		}
+	}
+</style>
